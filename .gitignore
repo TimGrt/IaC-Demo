@@ -1,0 +1,6 @@
+# Python VE build by Makefile
+ve-mkdocs-dev/
+# Build folder when running 'mkdocs build'
+site/
+# Assets downloaded by privacy plugin
+.cache/

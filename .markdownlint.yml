@@ -1,0 +1,14 @@
+# MD013/line-length - Line length
+MD013:
+  # Number of characters, basically allowing very long lines
+  line_length: 1000
+
+# MD033/no-inline-html - Inline HTML
+MD033:
+  allowed_elements: [br, div, nobr, figure, figcaption]
+
+# MD038/no-space-in-code - Spaces inside code span elements
+MD038: false
+
+# MD046/code-block-style - Code block style
+MD046: false
