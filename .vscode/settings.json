@@ -1,10 +1,16 @@
 {
   "cSpell.words": [
       "FQCN",
-      "whitespaces"
+      "Infrastructure",
+      "Playbook",
+      "Automate",
+      "Auditing"
   ],
+  "cSpell.language": "de",
   "cSpell.ignorePaths" : [
-      "mkdocs.yml"
+      "mkdocs.yml",
+      ".vscode/",
+      "playbook*.yml"
   ],
   "yaml.schemas": {
     "https://squidfunk.github.io/mkdocs-material/schema.json": "mkdocs.yml"
