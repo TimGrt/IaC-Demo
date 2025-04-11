@@ -1,0 +1,88 @@
+---
+
+- name: Prepare Automation Controller
+  hosts: localhost
+  connection: local
+  module_defaults:
+    group/awx.awx.controller:
+      controller_host: "{{ lookup('env', 'CONTROLLER_HOST') }}"
+      controller_username: "{{ lookup('env', 'CONTROLLER_USERNAME') }}"
+      controller_password: "{{ lookup('env', 'CONTROLLER_PASSWORD') }}"
+  pre_tasks:
+    - name: Ensure required connection variables are defined
+      ansible.builtin.assert:
+        that:
+          - lookup('env', 'CONTROLLER_HOST') is defined
+          - lookup('env', 'CONTROLLER_HOST') | length > 0
+          - lookup('env', 'CONTROLLER_USERNAME') is defined
+          - lookup('env', 'CONTROLLER_USERNAME') | length > 0
+          - lookup('env', 'CONTROLLER_PASSWORD') is defined
+          - lookup('env', 'CONTROLLER_PASSWORD') | length > 0
+        quiet: true
+        fail_msg: "Variables for accessing Automation controller are missing! Export the variables."
+  tasks:
+    - name: Ensure all hosts from web group are enabled
+      awx.awx.host:
+        name: "{{ item }}"
+        inventory: Workshop Inventory
+        enabled: true
+        validate_certs: true
+      loop:
+        - node1
+        - node2
+        - node3
+
+    - name: Create job template for infrastructure setup as Ops workload
+      awx.awx.job_template:
+        name: Web App Deploy
+        job_type: run
+        inventory: Workshop Inventory
+        project: Git Repository with Ops Playbooks
+        execution_environment: Default execution environment
+        playbook: rhel/webops/web_infrastructure.yml
+        credentials:
+          - Workshop Credentials
+        limit: web
+        become_enabled: true
+
+    - name: Create job template for infrastructure setup as Dev workload
+      awx.awx.job_template:
+        name: Node.js Deploy
+        job_type: run
+        inventory: Workshop Inventory
+        project: Git Repository with Ops Playbooks
+        execution_environment: Default execution environment
+        playbook: rhel/webdev/install_node_app.yml
+        credentials:
+          - Workshop Credentials
+        limit: web
+        become_enabled: true
+
+    - name: Create DevOps workflow for infrastructure setup and Nginx deployment
+      awx.awx.workflow_job_template:
+        name: Deploy Webapp Server
+        destroy_current_nodes: true
+        workflow_nodes:
+          - identifier: Approve Deployment
+            unified_job_template:
+              name: Approve Deployment
+              type: workflow_approval
+            related:
+              success_nodes:
+                - identifier: Web App Deploy
+          - identifier: Web App Deploy
+            unified_job_template:
+              name: Web App Deploy
+              type: job_template
+            related:
+              success_nodes:
+                - identifier: Node.js Deploy
+          - identifier: Node.js Deploy
+            unified_job_template:
+              name: Node.js Deploy
+              type: job_template
+
+    - name: Launch workflow
+      awx.awx.workflow_launch:
+        workflow_template: Deploy Webapp Server
+        wait: false

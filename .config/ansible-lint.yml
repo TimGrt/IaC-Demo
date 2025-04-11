@@ -1,0 +1,25 @@
+---
+
+profile: production
+quiet: true
+
+exclude_paths:
+  - .cache/
+  - .github/
+  - mkdocs.yml
+
+var_naming_pattern: "^[a-z_][a-z0-9_]*$"
+
+enable_list:
+  - args
+  - empty-string-compare
+  - no-log-password
+  - no-same-owner
+
+skip_list:
+  - var-naming[no-role-prefix]
+
+kinds:
+  - playbook: "**/*playbook*.yml"
+  - tasks: "**/*task*.yml"
+  - vars: "**/*variables*.yml"
