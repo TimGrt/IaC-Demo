@@ -347,7 +347,8 @@ Anschließend kannst du auf den Workflow Job klicken (im Screenshot `3 - Deploy 
   ![Workflow Running](assets/images/AAPWorkflowRunning.png)
 </figure>
 
-Nach einer Weile ist der Workflow beendet, es wurden neue Server provisioniert, ein Grundkonfiguration wurde ausgebracht und anschließend ein *nginx*-Webserver gestartet.
+!!! success
+    Nach einer Weile ist der Workflow beendet, **es wurden neue Server provisioniert, eine Grundkonfiguration wurde ausgebracht und anschließend ein *nginx*-Webserver gestartet**.
 
 <figure markdown="span">
   ![Workflow Running](assets/images/AAPWorkflowSuccessful.png)
