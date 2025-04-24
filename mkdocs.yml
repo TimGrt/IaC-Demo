@@ -65,6 +65,7 @@ theme:
     - content.code.copy
     - navigation.footer
     - navigation.instant
+    - navigation.prune
     - navigation.sections
     - navigation.top
     - search.highlight
@@ -83,9 +84,9 @@ theme:
 repo_url: https://github.com/TimGrt/IaC-Workshop-Uni-DuE
 repo_name: TimGrt/IaC-Workshop-Uni-DuE
 # Variables for Macros plugin, uncomment and add values if necessary
-# extra:
-#   workshop_url: https://catalog.partner.demo.redhat.com/workshop/7gswve
-#   workshop_password: d3m0p4$$w0rd!
+extra:
+  workshop_url: https://catalog.partner.demo.redhat.com/workshop/h7hyqt
+  workshop_password: n5qes36p
 # Navigation definition
 nav:
   - index.md

@@ -21,7 +21,7 @@ Eine Demoumgebung ist bereitgestellt, ihr benötigt lediglich einen Laptop und I
 !!! note ""
     <figure markdown="span">
         Workshop URL: **[{{ workshop_url | default('Dein Trainer wird dir den passenden Link nennen!') }}]({{ workshop_url | default('https://timgrt.github.io/IaC-Workshop-Uni-DuE/') }}){ target=_blank }**  
-        Workshop Passwort: **{{ editor_password | default('Dein Trainer wird dir das Passwort nennen!') }}**
+        Workshop Passwort: **{{ workshop_password | default('Dein Trainer wird dir das Passwort nennen!') }}**
     </figure>
 
 Gib deine E-Mail-Adresse ein (du bekommst keine Post, dies dient lediglich der Zuordnung zu den einzelnen Workshop-Instanzen) und das entsprechende Workshop-Passwort, du wirst auf eine Workshop-Übersichtsseite mit einigen Links weitergeleitet.
