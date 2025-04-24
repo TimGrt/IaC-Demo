@@ -131,34 +131,35 @@ Klicke links im *File Explorer* auf die Datei `playbook_controller_automation.ym
 Suche in der [Ansible Dokumentation](https://docs.ansible.com/ansible/latest/collections/awx/awx/index.html#modules){ target=_blank } nach dem passenden *Modul* zur Erstellung eines *Projects*.  
 
 !!! tip
-    Nutze die *Examples* (Beispiele) auf der Dokumentations-Seite des Moduls, du kannst ein Beispiel kopieren und einfügen, anschließend passt du die Parameter an und fügst fehlende Parameter hinzu.
+    Nutze die *Examples* (Beispiele) auf der Dokumentations-Seite des Moduls, du kannst ein Beispiel kopieren und einfügen, anschließend passt du die Parameter an und fügst fehlende Parameter hinzu. Im Zweifel musst du den *Modul*-Namen noch mit `awx.awx.` prefixen.
 
 Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit dem Development-Content hinzufügen (**insgesamt also zwei Tasks**).
 
+!!! example "Task-(Name): `Add project with playbooks for Ops workloads`"
+    | Key                    | Value                                              |
+    | ---------------------- | -------------------------------------------------- |
+    | `name`                 | `Git Repository with Ops Playbooks`                |
+    | `default_environment`  | `Default execution environment`                    |
+    | `scm_type`             | `git`                                              |
+    | `scm_url`              | `https://github.com/ansible/workshop-examples.git` |
+    | `scm_branch`           | `webops`                                           |
+    | `scm_update_on_launch` | `true`                                             |
+    | `scm_delete_on_update` | `true`                                             |
+    | `scm_clean`            | `true`                                             |
+    | `state`                | `present`                                          |
 
-| Key                    | Value                                              |
-| ---------------------- | -------------------------------------------------- |
-| `name`                 | `Add project with playbooks for Ops workloads`     |
-| `default_environment`  | `Default execution environment`                    |
-| `scm_type`             | `git`                                              |
-| `scm_url`              | `https://github.com/ansible/workshop-examples.git` |
-| `scm_branch`           | `webops`                                           |
-| `scm_update_on_launch` | `true`                                             |
-| `scm_delete_on_update` | `true`                                             |
-| `scm_clean`            | `true`                                             |
-| `state`                | `present`                                          |
-
-| Key                    | Value                                              |
-| ---------------------- | -------------------------------------------------- |
-| `name`                 | `Add project with playbooks for Dev workloads`     |
-| `default_environment`  | `Default execution environment`                    |
-| `scm_type`             | `git`                                              |
-| `scm_url`              | `https://github.com/ansible/workshop-examples.git` |
-| `scm_branch`           | `webdev`                                           |
-| `scm_update_on_launch` | `true`                                             |
-| `scm_delete_on_update` | `true`                                             |
-| `scm_clean`            | `true`                                             |
-| `state`                | `present`                                          |
+!!! example "Task-(Name): `Add project with playbooks for Dev workloads`"
+    | Key                    | Value                                              |
+    | ---------------------- | -------------------------------------------------- |
+    | `name`                 | `Git Repository with Dev Playbooks`                |
+    | `default_environment`  | `Default execution environment`                    |
+    | `scm_type`             | `git`                                              |
+    | `scm_url`              | `https://github.com/ansible/workshop-examples.git` |
+    | `scm_branch`           | `webdev`                                           |
+    | `scm_update_on_launch` | `true`                                             |
+    | `scm_delete_on_update` | `true`                                             |
+    | `scm_clean`            | `true`                                             |
+    | `state`                | `present`                                          |
 
 !!! warning
     **Ein Ansible-Playbook wird sequentiell abgearbeitet, die Reihenfolge ist entscheidend!**  
@@ -274,7 +275,7 @@ Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit
                 name: Node.js Deploy
                 job_type: run
                 inventory: Workshop Inventory
-                project: Git Repository with Ops Playbooks
+                project: Git Repository with Dev Playbooks
                 execution_environment: Default execution environment
                 playbook: rhel/webdev/install_node_app.yml
                 credentials:
