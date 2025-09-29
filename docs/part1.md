@@ -42,15 +42,6 @@ Im Abschnitt "**2 - :material-microsoft-visual-studio-code: image Visual Studio 
 
 Es wird ein VS Code Editor im Browser gestartet, warte bis er vollständig geladen ist.
 
-!!! tip "Nützliche VScode Konfiguration"
-
-    **Farbschema für Syntax-Highlighting anpassen**
-
-    Die *Ansible* Extension unterstützt *Syntax-Highlighting* für Ansible-Inhalte. Je nach verwendeten *Theme* von VScode wird dies möglicherweise nicht korrekt angezeigt. Verwende das **Dark+ Theme**.  
-    Klicke auf **File** in der oberen Menüleiste, gehe auf **Preferences**, **Theme** und klicke auf **Color Theme**. Hier **Dark+ (Default Dark+)** wählen.
-
-    ![Workbench Color Theme](assets/images/WorkbenchColorTheme.png)
-
 ## 3 - Github Projekt klonen
 
 Öffne ein Terminal. In der Menüleiste **Terminal** wählen und auf **New Terminal** klicken.  
@@ -70,3 +61,13 @@ git clone https://github.com/TimGrt/IaC-Workshop-Uni-DuE.git
     Hier **Zulassen** wählen.
 
 Es entsteht ein neuer Ordner, diesen über das Menüband **File** und **Open Folder...** öffnen (`/home/student/IaC-Workshop-Uni-DuE/`). Das Browser-Fenster aktualisiert sich, auf der linken Seite ist eine Ordner- und Dateiansicht zu sehen. Öffne wieder ein Terminal wie zuvor, um später die Automatisierung ausführen zu können.
+
+!!! tip "Nützliche VScode Konfiguration"
+
+    **Farbschema für Syntax-Highlighting anpassen**
+
+    Die *Ansible* Extension unterstützt *Syntax-Highlighting* für Ansible-Inhalte. Je nach verwendeten *Theme* von VScode wird dies möglicherweise nicht korrekt angezeigt. Verwende das **Dark+ Theme**.  
+    Klicke auf **File** in der oberen Menüleiste, gehe auf **Preferences**, **Theme** und klicke auf **Color Theme**.  
+    Hier **Dark+ (default dark)** wählen.
+
+    ![Workbench Color Theme](assets/images/WorkbenchColorTheme.png)

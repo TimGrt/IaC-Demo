@@ -3,43 +3,12 @@
 Die Konfiguration der Automation Platform wird über ein Ansible Playbook angepasst, du kannst das Playbook mit dem folgenden Kommando im Terminal/auf der Kommandozeile ausführen:
 
 ```console
-ansible-playbook playbook_controller_automation.yml
+ansible-navigator run playbook_controller_automation.yml
 ```
 
 Bei den ersten Ausführungen wirst du mit einigen Fehlermeldung konfrontiert, es fehlen Dependencies, Credentials und auch ein Teil der Automatisierung an sich.
 
-## 1 - Dependencies installieren
-
-Wenn du versuchst das *Playbook* auszuführen, wirst du die folgende Fehlermeldung erhalten:
-
-!!! failure
-
-    ```console
-    ERROR! Error loading module_defaults: could not resolve the module_defaults group awx.awx.controller
-    ```
-
-Es fehlen zur Ausführung notwendige *Dependencies*.  
-Ansible Module werden in *Collections* hinterlegt (im Grunde eine spezielle Ordner-Struktur), sie können auf dem Controller mit einem CLI-Kommando installiert werden. Die Datei `requirements.yml` enthält den Namen der Collection, suche in der [Ansible Dokumentation nach dem passenden Kommando](https://docs.ansible.com/ansible/latest/collections_guide/collections_installing.html#install-multiple-collections-with-a-requirements-file){ target=_blank } und führe es aus.
-
-??? tip "Hilfe nötig?"
-
-    Die fehlende Collection mit folgendem Kommando installieren:
-
-    ```console
-    ansible-galaxy collection install -r requirements.yml
-    ```
-
-    Anschließend mit dem folgenden Kommando prüfen:
-
-    ```console
-    ansible-galaxy collection list
-    ```
-
-!!! question "Alles erledigt?"
-
-    * [x] Notwendige `awx.awx` Collection ist installiert.
-
-## 2 - Credentials exportieren
+## 1 - Credentials exportieren
 
 Um die AAP automatisieren zu können, muss sich das Playbook bei der Ausführung an der API anmelden, die notwendigen Credentials werden als *Umgebungsvariablen* übergeben. Die folgenden drei Variablen müssen definiert werden:
 
@@ -66,7 +35,84 @@ env | grep CONTROLLER
 
     * [x] AAP-API Credentials als Umgebungsvariablen exportiert (`CONTROLLER_HOST`, `CONTROLLER_USERNAME`, `CONTROLLER_PASSWORD`)
 
+## 2 - Credentials im (Ausführungs-) Container bekanntmachen
+
+Du kannst jetzt das Playook mit dem folgenden Kommando ausführen:
+
+```console
+ansible-navigator run playbook_controller_automation.yml
+```
+
+!!! failure
+
+    Du erhälst die folgende Fehlermeldung:
+
+    ```console
+    TASK [Ensure required connection variables are defined] ************************
+    fatal: [localhost]: FAILED! => {"assertion": "lookup('env', 'CONTROLLER_HOST') | length > 0", "changed": false, "evaluated_to": false, "msg": "Variables for accessing Automation controller are missing! Export the variables."}
+    ```
+
+    Es fehlen Variablen für den Login an der Ansible Automation Platform.
+
+    **Aber die Variablen habe ich doch im vorherigen Schritt definiert/exportiert?**
+
+Das `ansible-navigator` Binary startet bei jedem Aufruf einen (Podman-)Container, dieser Container ist eine isolierte Ausführungsumgebung (fast wie eine eigene, kleine Linux-Instanz), in dieser sind die von dir zuvor exportierten Umgebungsvariablen **nicht** bekannt.  
+
+Du musst die Umgebungsvariablen an den Container *übergeben* (*pass into the container*), dafür musst du die bestehende `ansible-navigator.yml` Konfigurationsdatei anpassen.  
+Diese Datei legt einige Parameter für den *Ansible Navigator* fest (z.B. das verwendete Container Image, wo Log-Dateien gespeichert werden sollen, ...). Suche in der [Ansible Navigator Dokumentation](https://ansible.readthedocs.io/projects/navigator/settings/#pass-environment-variable){ target=_blank } nach dem passenden Parameter und füge an der **richtigen** Stelle eine **Liste** der zu übergebenen Umgebungsvariablen ein:
+
+```yaml
+        - CONTROLLER_HOST
+        - CONTROLLER_USERNAME
+        - CONTROLLER_PASSWORD
+```
+
+??? tip "Hilfe nötig?"
+
+    Die Konfigurationsdatei muss folgendermaßen aussehen, du kannst sie mit einem kleinen *Copy*-Button im Textfeld kopieren:
+
+
+    ```yaml title="ansible-navigator.yml"
+    ---
+    ansible-navigator:
+      execution-environment:
+        image: registry.redhat.io/ansible-automation-platform-25/ee-supported-rhel8:latest
+        enabled: true
+        container-engine: podman
+        pull:
+          policy: missing
+        volume-mounts:
+          - src: "/etc/ansible/"
+            dest: "/etc/ansible/"
+        environment-variables:
+          pass:
+            - CONTROLLER_HOST
+            - CONTROLLER_USERNAME
+            - CONTROLLER_PASSWORD
+      logging:
+        level: warning
+        file: logs/ansible-navigator.log
+      mode: stdout
+      playbook-artifact:
+        enable: true
+        save-as: "logs/{playbook_status}-{playbook_name}-{time_stamp}.json"
+
+    ```
+
+!!! question "Alles erledigt?"
+
+    * [X] Die `ansible-navigator.yml` Konfiguration ist angepasst
+    * [x] Die drei Umgebgungsvariablen (`CONTROLLER_HOST`, `CONTROLLER_USERNAME`, `CONTROLLER_PASSWORD`) werden in den Container übergeben
+
 ## 3 - Automatisierung anpassen/vervollständigen
+
+Du kannst jetzt das Playook mit dem folgenden Kommando ausführen:
+
+```console
+ansible-navigator run playbook_controller_automation.yml
+```
+
+Zumindest der *Tasks* zur Überprüfung der Variablen und ein weiterer läuft bereits durch, trotzdem schlägt die Ausführung noch fehl.  
 
 Die Automatisierung ist unvollständig, wenn du das Playbook erneut ausführst, wird versucht ein Job-Template zu erstellen, welches auf ein nicht-existentes *Project* verweist.
 
@@ -76,11 +122,12 @@ Die Automatisierung ist unvollständig, wenn du das Playbook erneut ausführst, 
     Request to /api/v2/projects/?name=Git+Repository+with+Ops+Playbooks returned 0 items, expected 1
     ```
 
-Ein *Project* in der AAP zeigt auf ein *Git-Repository*, es enthält allen *Code* für die Automatisierung.  
-Die AAP zieht sich den Code aus diesem und sorgt (durch die Auswahl einer Option) dafür, dass vor jeder Ausführung der Automatisierung der aktuellste Stand geladen wird.
+Ein *Project* in der AAP zeigt auf ein *Git-Repository*, es enthält allen *Code* für die Automatisierung. Ein *Job Template* legt die Parameter zur Ausführung dieses *Codes* fest, es muss daher wissen, aus welchem *Project* der Code kommen soll.  
+Die AAP zieht alles zur Ausführung aus dem *Git Repository* und sorgt (durch die Auswahl einer Option) dafür, dass vor jeder Ausführung der Automatisierung, der aktuellste Stand geladen wird.
 
-**Ein Ansible-Playbook besteht aus einer Liste an *Tasks*, du musst die fehlenden Tasks hinzufügen!**  
-Klicke links im *File Explorer* auf die Datei `playbook_controller_automation.yml`, ab Zeile 23 sind die einzelnen *Tasks* (Schritte/Aufgaben) beschrieben, um den AAP Controller in den gewünschten Zielzustand zu versetzen.
+**Ein Ansible Playbook besteht aus einer Liste an *Tasks*, du musst die fehlenden Tasks hinzufügen!**  
+
+Klicke links im *File Explorer* auf die Datei `playbook_controller_automation.yml`, ab Zeile 24 sind die einzelnen *Tasks* (Schritte/Aufgaben) beschrieben, um den AAP Controller in den gewünschten Zielzustand zu versetzen.
 
 !!! example ""
 
@@ -91,7 +138,7 @@ Klicke links im *File Explorer* auf die Datei `playbook_controller_automation.ym
       hosts: localhost # (2)!
       connection: local
       module_defaults: # (3)!
-        group/awx.awx.controller:
+        group/ansible.controller.controller:
           controller_host: "{{ lookup('env', 'CONTROLLER_HOST') }}"
           controller_username: "{{ lookup('env', 'CONTROLLER_USERNAME') }}"
           controller_password: "{{ lookup('env', 'CONTROLLER_PASSWORD') }}"
@@ -109,7 +156,7 @@ Klicke links im *File Explorer* auf die Datei `playbook_controller_automation.ym
             fail_msg: "Variables for accessing Automation controller are missing! Export the variables."
       tasks: # (5)!
         - name: Ensure all hosts from web group are enabled
-          awx.awx.host:
+          ansible.controller.host:
             name: "{{ item }}"
             inventory: Workshop Inventory
             enabled: true
@@ -131,7 +178,7 @@ Klicke links im *File Explorer* auf die Datei `playbook_controller_automation.ym
 Suche in der [Ansible Dokumentation](https://docs.ansible.com/ansible/latest/collections/awx/awx/index.html#modules){ target=_blank } nach dem passenden *Modul* zur Erstellung eines *Projects*.  
 
 !!! tip
-    Nutze die *Examples* (Beispiele) auf der Dokumentations-Seite des Moduls, du kannst ein Beispiel kopieren und einfügen, anschließend passt du die Parameter an und fügst fehlende Parameter hinzu. Im Zweifel musst du den *Modul*-Namen noch mit `awx.awx.` prefixen.
+    Nutze die *Examples* (Beispiele) auf der Dokumentations-Seite des Moduls, du kannst ein Beispiel kopieren und einfügen, anschließend passt du die Parameter an und fügst fehlende Parameter hinzu. Der *Modul*-Name **muss** `ansible.controller.` statt mit `awx.awx.` beginnen!
 
 Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit dem Development-Content hinzufügen (**insgesamt also zwei Tasks**).
 
@@ -162,7 +209,7 @@ Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit
     | `state`                | `present`                                          |
 
 !!! warning
-    **Ein Ansible-Playbook wird sequentiell abgearbeitet, die Reihenfolge ist entscheidend!**  
+    **Ein Ansible Playbook wird sequentiell abgearbeitet, die Reihenfolge ist entscheidend!**  
     Füge die Tasks hinter dem Task `Ensure all hosts from web group are enabled`, aber vor dem Task `Create job template for infrastructure setup as Ops workload` ein.  
     Playbooks sind im YAML-Format geschrieben, hier kommt es auf die passende **Einrückung** an, **alle Tasks müssen auf der gleichen Ebene starten!**
 
@@ -172,7 +219,7 @@ Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit
     {% raw %}
     ```yaml
     - name: Add project with playbooks for Ops workloads
-      awx.awx.project:
+      ansible.controller.project:
         name: Git Repository with Ops Playbooks
         default_environment: Default execution environment
         scm_type: git
@@ -184,7 +231,7 @@ Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit
         state: present
 
     - name: Add project with playbooks for Dev workloads
-      awx.awx.project:
+      ansible.controller.project:
         name: Git Repository with Dev Playbooks
         default_environment: Default execution environment
         scm_type: git
@@ -205,7 +252,7 @@ Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit
           hosts: localhost
           connection: local
           module_defaults:
-            group/awx.awx.controller:
+            group/ansible.controller.controller:
               controller_host: "{{ lookup('env', 'CONTROLLER_HOST') }}"
               controller_username: "{{ lookup('env', 'CONTROLLER_USERNAME') }}"
               controller_password: "{{ lookup('env', 'CONTROLLER_PASSWORD') }}"
@@ -223,7 +270,7 @@ Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit
                 fail_msg: "Variables for accessing Automation controller are missing! Export the variables."
           tasks:
             - name: Ensure all hosts from web group are enabled
-              awx.awx.host:
+              ansible.controller.host:
                 name: "{{ item }}"
                 inventory: Workshop Inventory
                 enabled: true
@@ -234,7 +281,7 @@ Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit
                 - node3
 
             - name: Add project with playbooks for Ops workloads
-              awx.awx.project:
+              ansible.controller.project:
                 name: Git Repository with Ops Playbooks
                 default_environment: Default execution environment
                 scm_type: git
@@ -246,7 +293,7 @@ Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit
                 state: present
 
             - name: Add project with playbooks for Dev workloads
-              awx.awx.project:
+              ansible.controller.project:
                 name: Git Repository with Dev Playbooks
                 default_environment: Default execution environment
                 scm_type: git
@@ -258,7 +305,7 @@ Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit
                 state: present
 
             - name: Create job template for infrastructure setup as Ops workload
-              awx.awx.job_template:
+              ansible.controller.job_template:
                 name: Web App Deploy
                 job_type: run
                 inventory: Workshop Inventory
@@ -271,7 +318,7 @@ Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit
                 become_enabled: true
 
             - name: Create job template for infrastructure setup as Dev workload
-              awx.awx.job_template:
+              ansible.controller.job_template:
                 name: Node.js Deploy
                 job_type: run
                 inventory: Workshop Inventory
@@ -284,7 +331,7 @@ Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit
                 become_enabled: true
 
             - name: Create DevOps workflow for infrastructure setup and Nginx deployment
-              awx.awx.workflow_job_template:
+              ansible.controller.workflow_job_template:
                 name: Deploy Webapp Server
                 destroy_current_nodes: true
                 workflow_nodes:
@@ -308,7 +355,7 @@ Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit
                       type: job_template
 
             - name: Launch workflow
-              awx.awx.workflow_launch:
+              ansible.controller.workflow_launch:
                 workflow_template: Deploy Webapp Server
                 wait: false
 
@@ -326,10 +373,10 @@ Du musst sowohl das Project mit dem Operations-Content, als auch das Project mit
 Sobald alles vollständig ist, kannst du die Automatisierung ausführen. Im Terminal wieder das folgende Kommando ausführen:
 
 ```console
-ansible-playbook playbook_controller_automation.yml
+ansible-navigator run playbook_controller_automation.yml
 ```
 
-Du wirst die einzelnen Task-Beschreibungen mit einem gelben *Changed*-Status sehen (wenn die Objekte angelegt/angepasst) werden, wenn alle Tasks erfolgreich abgearbeitet sind endet der Playbook-Run mit einem *Play Recap*.
+Du wirst die einzelnen Task-Beschreibungen mit einem gelben *Changed*-Status sehen (wenn die Objekte angelegt/angepasst) werden, **wenn alle Tasks erfolgreich abgearbeitet sind endet der Playbook-Run mit einem `Play Recap`**.
 
 ## 5 - Automatisierung bestätigen
 
@@ -342,7 +389,7 @@ Im Controller-UI, klicke links auf **Workflow Approvals**. Bestätige die Ausfü
   ![Workflow Approval](assets/images/AAPApproveWorkflow.png)
 </figure>
 
-Anschließend kannst du auf den Workflow Job klicken (im Screenshot `3 - Deploy Webapp Server`), es öffnet sich eine Ansicht mit den einzelnen Workflow-Steps. Ebenfalls kannst du im linken Menü auf **Jobs** klicken und dort den Workflow Job auswählen.
+Im linken Menü auf **Automation Execution &rarr; Jobs** klicken und dort den Workflow Job auswählen (auf `Deploy Webapp Server` klicken).
 
 <figure markdown="span">
   ![Workflow Running](assets/images/AAPWorkflowRunning.png)
