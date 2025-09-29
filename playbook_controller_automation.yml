@@ -1,10 +1,10 @@
 ---
-
 - name: Prepare Automation Controller
   hosts: localhost
   connection: local
+  gather_facts: false
   module_defaults:
-    group/awx.awx.controller:
+    group/ansible.controller.controller:
       controller_host: "{{ lookup('env', 'CONTROLLER_HOST') }}"
       controller_username: "{{ lookup('env', 'CONTROLLER_USERNAME') }}"
       controller_password: "{{ lookup('env', 'CONTROLLER_PASSWORD') }}"
@@ -22,7 +22,7 @@
         fail_msg: "Variables for accessing Automation controller are missing! Export the variables."
   tasks:
     - name: Ensure all hosts from web group are enabled
-      awx.awx.host:
+      ansible.controller.host:
         name: "{{ item }}"
         inventory: Workshop Inventory
         enabled: true
@@ -33,7 +33,7 @@
         - node3
 
     - name: Create job template for infrastructure setup as Ops workload
-      awx.awx.job_template:
+      ansible.controller.job_template:
         name: Web App Deploy
         job_type: run
         inventory: Workshop Inventory
@@ -46,7 +46,7 @@
         become_enabled: true
 
     - name: Create job template for infrastructure setup as Dev workload
-      awx.awx.job_template:
+      ansible.controller.job_template:
         name: Node.js Deploy
         job_type: run
         inventory: Workshop Inventory
@@ -59,7 +59,7 @@
         become_enabled: true
 
     - name: Create DevOps workflow for infrastructure setup and Nginx deployment
-      awx.awx.workflow_job_template:
+      ansible.controller.workflow_job_template:
         name: Deploy Webapp Server
         destroy_current_nodes: true
         workflow_nodes:
@@ -83,6 +83,6 @@
               type: job_template
 
     - name: Launch workflow
-      awx.awx.workflow_launch:
+      ansible.controller.workflow_launch:
         workflow_template: Deploy Webapp Server
         wait: false
