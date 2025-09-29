@@ -2,11 +2,13 @@
 
 profile: production
 quiet: true
+offline: true
 
 exclude_paths:
   - .cache/
   - .github/
   - mkdocs.yml
+  - playbook_controller_automation.yml # has modules from Automation Hub, can't get downloaded in CI
 
 var_naming_pattern: "^[a-z_][a-z0-9_]*$"
 
