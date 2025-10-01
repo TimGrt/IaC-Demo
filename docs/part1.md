@@ -42,19 +42,19 @@ Im Abschnitt "**2 - :material-microsoft-visual-studio-code: image Visual Studio 
 
 Es wird ein VS Code Editor im Browser gestartet, warte bis er vollständig geladen ist.
 
-!!! tip "Nützliche VScode Konfiguration"
-
-    **Farbschema für Syntax-Highlighting anpassen**
-
-    Die *Ansible* Extension unterstützt *Syntax-Highlighting* für Ansible-Inhalte. Je nach verwendeten *Theme* von VScode wird dies möglicherweise nicht korrekt angezeigt. Verwende das **Dark+ Theme**.  
-    Klicke auf **File** in der oberen Menüleiste, gehe auf **Preferences**, **Theme** und klicke auf **Color Theme**. Hier **Dark+ (Default Dark+)** wählen.
-
-    ![Workbench Color Theme](assets/images/WorkbenchColorTheme.png)
+!!! tip
+    Die Demo-Umgebung ist eigentlich für einen kompletten Ansible Workshop gedacht! Du führst heute aber einige fortgeschrittene Dinge aus, welche nicht Teil des ursprünglichen Workshops sind.
 
 ## 3 - Github Projekt klonen
 
 Öffne ein Terminal. In der Menüleiste **Terminal** wählen und auf **New Terminal** klicken.  
-Im Terminal/der Linux-Kommandozeile das Github-Projekt mit dem Automatisierungs-Playbook *klonen*:
+Im Terminal/der Linux-Kommandozeile sicherstellen, dass du im *Home*-Verzeichnis bist:
+
+```console
+cd ~
+```
+
+Das Github-Projekt mit dem Automatisierungs-Playbook *klonen*, dazu das folgende Kommando ausführen:
 
 ```console
 git clone https://github.com/TimGrt/IaC-Workshop-Uni-DuE.git
@@ -70,3 +70,15 @@ git clone https://github.com/TimGrt/IaC-Workshop-Uni-DuE.git
     Hier **Zulassen** wählen.
 
 Es entsteht ein neuer Ordner, diesen über das Menüband **File** und **Open Folder...** öffnen (`/home/student/IaC-Workshop-Uni-DuE/`). Das Browser-Fenster aktualisiert sich, auf der linken Seite ist eine Ordner- und Dateiansicht zu sehen. Öffne wieder ein Terminal wie zuvor, um später die Automatisierung ausführen zu können.
+
+!!! tip "Nützliche VScode Konfiguration"
+
+    **Farbschema für Syntax-Highlighting anpassen**
+
+    Die *Ansible* Extension unterstützt *Syntax-Highlighting* für Ansible-Inhalte. Je nach verwendeten *Theme* von VScode wird dies möglicherweise nicht korrekt angezeigt. Verwende das **Dark+ Theme**.  
+    Klicke auf **File** in der oberen Menüleiste, gehe auf **Preferences**, **Theme** und klicke auf **Color Theme**.  
+    Hier **Dark+ (default dark)** wählen.
+
+    ![Workbench Color Theme](assets/images/WorkbenchColorTheme.png)
+
+    Die Warnung `Unable to write to user settings.` kann ignoriert werden.

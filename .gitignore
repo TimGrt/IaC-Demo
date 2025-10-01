@@ -6,3 +6,5 @@ site/
 .cache/
 # Ansible Cache folder
 .ansible/
+# Logs folder from ansible-navigator runs
+logs/
