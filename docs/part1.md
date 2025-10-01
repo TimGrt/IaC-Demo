@@ -42,10 +42,19 @@ Im Abschnitt "**2 - :material-microsoft-visual-studio-code: image Visual Studio 
 
 Es wird ein VS Code Editor im Browser gestartet, warte bis er vollständig geladen ist.
 
+!!! tip
+    Die Demo-Umgebung ist eigentlich für einen kompletten Ansible Workshop gedacht! Du führst heute aber einige fortgeschrittene Dinge aus, welche nicht Teil des ursprünglichen Workshops sind.
+
 ## 3 - Github Projekt klonen
 
 Öffne ein Terminal. In der Menüleiste **Terminal** wählen und auf **New Terminal** klicken.  
-Im Terminal/der Linux-Kommandozeile das Github-Projekt mit dem Automatisierungs-Playbook *klonen*:
+Im Terminal/der Linux-Kommandozeile sicherstellen, dass du im *Home*-Verzeichnis bist:
+
+```console
+cd ~
+```
+
+Das Github-Projekt mit dem Automatisierungs-Playbook *klonen*, dazu das folgende Kommando ausführen:
 
 ```console
 git clone https://github.com/TimGrt/IaC-Workshop-Uni-DuE.git
@@ -71,3 +80,5 @@ Es entsteht ein neuer Ordner, diesen über das Menüband **File** und **Open Fol
     Hier **Dark+ (default dark)** wählen.
 
     ![Workbench Color Theme](assets/images/WorkbenchColorTheme.png)
+
+    Die Warnung `Unable to write to user settings.` kann ignoriert werden.

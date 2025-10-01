@@ -23,7 +23,13 @@ export CONTROLLER_USERNAME=admin
 ```
 
 **Exportiere alle drei Variablen.**  
-Nutze die **[Werte aus der Workshop-Übersichtsseite]({{ workshop_url | default('https://timgrt.github.io/IaC-Workshop-Uni-DuE/') }}){ target=_blank }**, für die Variable `CONTROLLER_HOST` die URL des Red Hat Ansible Automation Controller (Abschnitt 3) verwenden.
+
+Nutze die **[Werte aus der Workshop-Übersichtsseite]({{ workshop_url | default('https://timgrt.github.io/IaC-Workshop-Uni-DuE/') }}){ target=_blank }** aus **Abschnitt 3**.  
+
+Für die Variable `CONTROLLER_HOST` die URL des Red Hat Ansible Automation Controller, für die Variable `CONTROLLER_PASSWORD` das entsprechende Passwort.
+
+!!! tip
+    Wenn du die Werte von der Workshop-Übersichtsseite kopiert hast, kannst du sie mit der **rechten Maustauste** in der Konsole einfügen.
 
 Mit dem folgenden Kommando kannst du prüfen ob die Variablen erfolgreich exportiert wurden:
 
@@ -396,7 +402,7 @@ Im linken Menü auf **Automation Execution &rarr; Jobs** klicken und dort den Wo
 </figure>
 
 !!! success
-    Nach einer Weile ist der Workflow beendet, **es wurden neue Server provisioniert, eine Grundkonfiguration wurde ausgebracht und anschließend ein *nginx*-Webserver gestartet**.
+    Nach einer Weile ist der Workflow beendet, **es wurden neue Server provisioniert, eine Grundkonfiguration wurde ausgebracht, ein *Apache*-Webserver gestartet und anschließend ein *Node.js*-Skript ausgeführt.**.
 
 <figure markdown="span">
   ![Workflow Running](assets/images/AAPWorkflowSuccessful.png)
