@@ -85,9 +85,8 @@ repo_url: https://github.com/TimGrt/IaC-Workshop-Uni-DuE
 repo_name: TimGrt/IaC-Workshop-Uni-DuE
 # Variables for Macros plugin, uncomment and add values if necessary
 # If you use the password, GitGuardian will trigger and the CI/CD pipeline will fail
-# extra:
-#   workshop_url: https://timgrt.github.io/IaC-Workshop-Uni-DuE/
-#   workshop_password: d3m0p4$$w0rd!
+extra:
+  workshop_url: https://catalog.partner.demo.redhat.com/workshop/qh4bpg
 # Navigation definition
 nav:
   - index.md
