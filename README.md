@@ -1,3 +1,5 @@
-# IaC-Workshop-Uni-DuE
+# IaC Demo
 
-Infrastructure as Code Demo with AAP for Workshop with Informatik-Fachschaft Uni Duisburg-Essen
+Configuration as Code with AAP to demo DevOps Workflow.
+
+Contains a (incomplete) Ansible playbook which creates resources in Ansible Automation Platform.
