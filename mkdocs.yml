@@ -1,5 +1,10 @@
 # code: language=yaml
-site_name: IaC Demo - Fachschaft Informatik Uni Duisburg-Essen
+# Variables for Macros plugin, uncomment and add values if necessary
+extra:
+  # target_audience: Fachschaft Informatik der Universität Duisburg-Essen
+  workshop_url: https://catalog.partner.demo.redhat.com/workshop/qh4bpg
+# Navigation definition
+site_name: IaC in DevOps-Projekten
 site_description: Small exercises for demoing Infrastructure as Code with Ansible and Automation Controller
 copyright: Copyright &copy; Computacenter 2025
 edit_uri: ""
@@ -16,6 +21,8 @@ markdown_extensions:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.keys
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.highlight:
@@ -81,15 +88,11 @@ theme:
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
-repo_url: https://github.com/TimGrt/IaC-Workshop-Uni-DuE
-repo_name: TimGrt/IaC-Workshop-Uni-DuE
-# Variables for Macros plugin, uncomment and add values if necessary
-# If you use the password, GitGuardian will trigger and the CI/CD pipeline will fail
-extra:
-  workshop_url: https://catalog.partner.demo.redhat.com/workshop/qh4bpg
-# Navigation definition
+repo_url: https://github.com/TimGrt/IaC-Demo
+repo_name: TimGrt/IaC-Demo
 nav:
   - index.md
   - "Teil 1:<br>Vorbereitung": part1.md
-  - "Teil 2:<br>Automatisierung": part2.md
-  - "Teil 3:<br>Recap": part3.md
+  - "Teil 2:<br>Dev Stage": part2.md
+  - "Teil 3:<br>Ops Stage": part3.md
+  - "Recap": recap.md
